@@ -34,8 +34,7 @@ I used two external libraries, which you simple have to download and unzip in th
 * https://github.com/phacility/libphutil
 * http://dhtmlx.com/docs/products/dhtmlxGantt/
 
-Then you will need to edit "functions.php" file, adding Phabricator's domain, Bot username and conduit certificate.
-
+Then you will need to copy the file `config-example.php` to `config.php` and fill it with your Phabricator's domain, Bot username and conduit certificate.
 
 Happy Planning!
 
