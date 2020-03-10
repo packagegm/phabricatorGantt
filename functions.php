@@ -1,21 +1,39 @@
 <?php
 
-function getTasks() {
+/**
+ * Get or create a valid ConduitClient instantiated objectr
+ *
+ * @return ConduitClient
+ */
+function conduit() {
 
-	$conduit = new ConduitClient( config( 'CONDUIT_URL' ) );
-	$conduit->setConduitToken( config( 'CONDUIT_API_TOKEN' ) );
-	$response = $conduit->callMethodSynchronous('maniphest.query', array());
+	// remember the instance
+	static $instance = null;
 
-	return $response;
+	// eventually create the instance
+	if( !$instance ) {
+		$instance = new ConduitClient( config( 'CONDUIT_URL'       ) );
+		$instance->setConduitToken(    config( 'CONDUIT_API_TOKEN' ) );
+	}
+
+	return $instance;
+
 }
 
-function getUsers() {
+/**
+ * Query all the Maniphest Tasks
+ */
+function query_tasks() {
+	return conduit()
+		->callMethodSynchronous( 'maniphest.query', [] );
+}
 
-	$conduit = new ConduitClient( config( 'CONDUIT_URL' ) );
-	$conduit->setConduitToken( config( 'CONDUIT_API_TOKEN' ) );
-	$response = $conduit->callMethodSynchronous('user.query',array());
-
-	return $response;
+/**
+ * Query all the Users
+ */
+function query_users() {
+	return conduit()
+		->callMethodSynchronous( 'user.query', [] );
 }
 
 /**
@@ -32,7 +50,7 @@ function config( $attribute ) {
 	// no config no party
 	if( !$config ) {
 		throw new Exception( sprintf(
-			"Missing configuration for %s - this means you have to copy the file config-example.php to config.php and fill it",
+			"Missing configuration for %s from config.php",
 			$attribute
 		) );
 	}

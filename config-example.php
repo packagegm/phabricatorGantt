@@ -11,8 +11,11 @@
 // fill this configuration with your credentials
 $CONFIG = [
 	// Conduit client API URL:
-	'CONDUIT_CLIENT'    => "https://your.phabricator.com",
+	'CONDUIT_URL'    => "https://your.phabricator.com/",
 
 	// Conduit Client API Token:
 	'CONDUIT_API_TOKEN' => 'your_conduit_api_token',
+
+	// Arcanist pathname:
+	'ARCANIST_PATH'     => '../arcanist/src/__phutil_library_init__.php',
 ];

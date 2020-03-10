@@ -1,16 +1,27 @@
 <!DOCTYPE html>
 <?php
-include "functions.php";
-$tasks = getTasks();
-$users = getUsers();
+// require some utilities
+require 'functions.php';
+
+// require the configuration file
+if( !file_exists( 'config.php' ) ) {
+	die( "Please copy the config-example.php to config.php and fill it" );
+}
+require 'config.php';
+
+// require the Arcanist utilities to talk with the APIs
+require config( 'ARCANIST_PATH' );
+
+$tasks = query_tasks();
+$users = query_users();
 ?>
 <html>
 <head>
 	<title>Gantt Diagram from Phabricator</title>
-	<script src="codebase/dhtmlxgantt.js"></script>
-	<script src="./functions.js"></script>
-	<script src="https://export.dhtmlx.com/gantt/api.js"></script>
-	<link href="codebase/dhtmlxgantt.css" rel="stylesheet">
+	<script src="resources/gantt/codebase/dhtmlxgantt.js"></script>
+	<script src="functions.js"></script>
+	<script src="resources/gantt-api/api.js"></script>
+	<link href="resources/gantt/codebase/dhtmlxgantt.css" rel="stylesheet" />
 	<style type="text/css" media="screen">
 		html, body{
 			margin:0px;
@@ -40,8 +51,8 @@ $users = getUsers();
 	<input value="Export to PDF" type="button" onclick='gantt.exportToPDF()'>
 	<div id="gantt_here" style='height:400px;'></div>
 	<script type="text/javascript">
-		var users = userAdapter(<?php echo json_encode($users) ?>);
-		var tasks = taskAdapter(<?php echo json_encode($tasks) ?>);
+		var users = userAdapter(<?= json_encode( $users ) ?>);
+		var tasks = taskAdapter(<?= json_encode( $tasks ) ?>);
 		gantt.init("gantt_here");
 		gantt.parse(tasks);
 	</script>
