@@ -9,22 +9,17 @@ This is a quick prototype that displays all Phabricator Tasks (Maniphest) as a G
 Configure Phabricator
 ---------------------
 
-Gantt Diagrams need a start date and task duration, two fields Phabricator does not offer by default, however, it provides a very good and extensible framework; to add this JSON to this page:
+Gantt Diagrams need some additional fields Phabricator does not offer by default, however,
+Phabricator provides a very good and extensible framework; to add this JSON to this page:
 
 http://EXAMPLE.org/config/edit/maniphest.custom-field-definitions/
 
 ```
 {
-  "estimated-days" : {
-    "name"     : "Days Duration",
-    "type"     : "int",
-    "caption"  : "Estimated number of days this will take.",
-    "required" : true
-  },
-  "start-day"      : {
-    "name"     : "Start Date",
-    "type"     : "date",
-    "required" : true
+  "deadline": {
+    "name": "Deadline",
+    "type": "date",
+    "required": false
   }
 }
 ```
