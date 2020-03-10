@@ -1,6 +1,6 @@
 <?php
 
-function getTasks(){
+function getTasks() {
 
 	$conduit = new ConduitClient("https://your.phabricator.com");
 	$conduit->setConduitToken("your_conduit_api_token");
@@ -9,7 +9,7 @@ function getTasks(){
 	return $response;
 }
 
-function getUsers(){
+function getUsers() {
 
 	$conduit = new ConduitClient("https://your.phabricator.com");
 	$conduit->setConduitToken("your_conduit_api_token");
@@ -17,5 +17,3 @@ function getUsers(){
 
 	return $response;
 }
-
-?>
