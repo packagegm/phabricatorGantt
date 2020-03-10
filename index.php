@@ -31,25 +31,33 @@ $users = query_users();
 		}
 	</style>
 	<script type="text/javascript">
-		gantt.config.grid_width = 500;
+		var BASE_URL = <?= json_encode( config( 'CONDUIT_URL' ) ) ?>;
+		gantt.config.grid_width = 600;
+		gantt.config.readonly = true;
+		gantt.locale.labels.section_template = "Task";
 		gantt.templates.task_text = function(start,end,task) {
 			return "<b>" + task.text + "</b>";
 		};
+/*
 		gantt.config.lightbox.sections = [
 	        {name: "description", map_to: "description", type: "textarea", focus: true},
+	        {name: "link", map_to: "link", type: "template" },
 	        {name: "time", type: "duration", map_to: "auto", time_format:["%d", "%m", "%Y", "%H:%i"]},
 	    ];
+*/
 	    gantt.config.columns =  [
 		    {name:"text",       label:"Task name",  tree:true, width:'*' },
-		    {name:"start_date", label:"Start time", align: "center" },
-		    {name:"end_date",   label:"End date",   align: "center" },
+		    {name:"link",       label:"Task", align: "center" },
+/*		    {name:"start_date", label:"Start time", align: "center" }, */
+		    {name:"end_date",   label:"Deadline",   align: "center" },
 		    {name:"holder",     label:"Assigned To", align: "center" }
 		];
 	</script>
 </head>
 <body>
-	<input value="Export to PDF" type="button" onclick='gantt.exportToPDF()'>
+	<h1>Phabricator Deadlines</h1>
 	<div id="gantt_here" style='height:400px;'></div>
+	<input value="Export to PDF" type="button" onclick='gantt.exportToPDF()'>
 	<script type="text/javascript">
 		var users = userAdapter(<?= json_encode( $users ) ?>);
 		var tasks = taskAdapter(<?= json_encode( $tasks ) ?>);

@@ -9,26 +9,41 @@ taskAdapter = function(taskPhp) {
 		var task = data[dataEl];
 		var tmpTask = {};
 
-		tmpTask.id = task.phid;
-		tmpTask.text = task.fields.name;
-		tmpTask.description = task.fields.description.raw;
-		tmpTask.start_date = timestampToDate( task.fields['custom.start-day'] );
-		tmpTask.duration = task.fields[ 'custom.estimated-days' ];
-		tmpTask.progress = 0;
-		tmpTask.open = true;
-		tmpTask.holder = users[task.fields.ownerPHID];
+		var dateCreated = task.fields.dateCreated;
+		var deadline    = task.fields[ 'custom.deadline' ];
 
-		tasks.push(tmpTask);
+		// no deadline no party
+		if( deadline ) {
 
-		var i = 0;
-		for (var depends in task.dependsOnTaskPHIDs) {
-			var targetId = task.dependsOnTaskPHIDs[depends]
-			var tmpLink = {};
-			tmpLink.id = i;
-			tmpLink.target = tmpTask.id;
-			tmpLink.source = targetId;
-			tmpLink.type = 0;
-			links.push(tmpLink);
+			var duration = parseInt( ( deadline - dateCreated ) / 86400 );
+			if( duration < 1 ) {
+				duration = 1;
+			}
+
+			var taskID = "T" + task.id;
+
+			tmpTask.id = task.phid;
+			tmpTask.text = task.fields.name;
+			tmpTask.link = "<a href=" + BASE_URL + taskID + " target=\"_blank\">" + taskID + "</a>";
+			tmpTask.description = task.fields.description.raw;
+			tmpTask.start_date = timestampToDate( dateCreated );
+			tmpTask.end_date = timestampToDate( deadline );
+			tmpTask.progress = 0;
+			tmpTask.open = true;
+			tmpTask.holder = users[task.fields.ownerPHID];
+
+			tasks.push(tmpTask);
+
+			var i = 0;
+			for (var depends in task.dependsOnTaskPHIDs) {
+				var targetId = task.dependsOnTaskPHIDs[depends]
+				var tmpLink = {};
+				tmpLink.id = i;
+				tmpLink.target = tmpTask.id;
+				tmpLink.source = targetId;
+				tmpLink.type = 0;
+				links.push(tmpLink);
+			}
 		}
 	}
 
