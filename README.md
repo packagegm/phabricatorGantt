@@ -3,12 +3,17 @@ Phabricator Gantt Diagrams
 
 This is a quick prototype that displays all Phabricator Tasks (Maniphest) as a Gantt Diagram. For this purpose some things have to be configured.
 
+* Original author: contact[at] ekenny[dot]org
+* Current maintainer: Valerio Bozzolan
+
 Configure Phabricator
 ---------------------
 
-Gantt Diagrams need a start date and task duration, two fields Phabricator does not offer by default, however, it provides a very good and extensible framework; to add this fields edit: http://EXAMPLE.org/config/edit/maniphest.custom-field-definitions/ adding this JSON fields:
+Gantt Diagrams need a start date and task duration, two fields Phabricator does not offer by default, however, it provides a very good and extensible framework; to add this JSON to this page:
 
-```json
+http://EXAMPLE.org/config/edit/maniphest.custom-field-definitions/
+
+```
 {
   "estimated-days" : {
     "name"     : "Days Duration",
@@ -24,19 +29,20 @@ Gantt Diagrams need a start date and task duration, two fields Phabricator does 
 }
 ```
 
-Then you will need to create a bot user to access tasks externally (http://EXAMPLE.org/people/create/)
+Then you will need to create a bot user to access tasks externally from this page:
 
-Configure this project
-----------------------
+http://EXAMPLE.org/people/create/
 
-I used two external libraries, which you simple have to download and unzip in the same root folder this contents are.
+Dependencies
+------------
 
-* https://github.com/phacility/libphutil
-* http://dhtmlx.com/docs/products/dhtmlxGantt/
+The Arcanist library is needed to communicate with Phabricator:
 
-Then you will need to copy the file `config-example.php` to `config.php` and fill it with your Phabricator's domain, Bot username and conduit certificate.
+```
+# Download Arcanist from the parent directory
+git clone https://secure.phabricator.com/diffusion/ARC/arcanist.git
+```
+
+Then copy the file `config-example.php` to `config.php` and fill it with your Phabricator's domain and conduit API token.
 
 Happy Planning!
-
-Please tell me what you think!
-contact[at] ekenny[dot]org
