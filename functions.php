@@ -25,7 +25,10 @@ function conduit() {
  */
 function query_tasks() {
 	return conduit()
-		->callMethodSynchronous( 'maniphest.query', [] );
+		->callMethodSynchronous( 'maniphest.search', [
+			'queryKey' => 'open',
+			'order'    => 'newest',
+		] );
 }
 
 /**

@@ -1,18 +1,22 @@
 taskAdapter = function(taskPhp) {
+
     var tasks = [];
     var links = [];
 
-    for (var taskIndex in taskPhp) {
-        var task = taskPhp[taskIndex]
+    var data = taskPhp.data;
+
+    for (var dataEl = 0; dataEl < data.length; dataEl++) {
+        var task = data[dataEl];
         var tmpTask = {};
+
         tmpTask.id = task.phid;
-        tmpTask.text = task.title;
-        tmpTask.description = task.description;
-        tmpTask.start_date = timestampToDate(task.auxiliary['std:maniphest:start-day']);
-        tmpTask.duration = task.auxiliary["std:maniphest:estimated-days"];
+        tmpTask.text = task.fields.name;
+        tmpTask.description = task.fields.description.raw;
+        tmpTask.start_date = timestampToDate( task.fields['custom.start-day'] );
+        tmpTask.duration = task.fields[ 'custom.estimated-days' ];
         tmpTask.progress = 0;
         tmpTask.open = true;
-        tmpTask.holder = users[task.ownerPHID];
+        tmpTask.holder = users[task.fields.ownerPHID];
 
         tasks.push(tmpTask);
 
