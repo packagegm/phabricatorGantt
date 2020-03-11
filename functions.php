@@ -29,7 +29,7 @@ function query_tasks() {
 	$tasks =
 		conduit()
 			->callMethodSynchronous( 'maniphest.search', [
-				'queryKey' => 'open',
+//				'queryKey' => 'open',
 				'order'    => 'newest',
 			] );
 

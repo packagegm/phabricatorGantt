@@ -46,12 +46,12 @@ $users = query_users();
 	    ];
 */
 	    gantt.config.columns =  [
-		    {name:"text",       label:"Task name",  tree:true, width:'*' },
-		    {name:"link",       label:"Task", align: "center" },
+		    {name:"link",       label:"Task", align: "left", width: "50" },
+		    {name:"text",       label:"Task name",  align: "left", tree:true, width:'*' },
 /*		    {name:"start_date", label:"Start time", align: "center" }, */
-		    {name:"end_date",   label:"Deadline",   align: "center" },
+		    {name:"end_date",   label:"Deadline",   align: "left" },
 		    {name:"holder",     label:"Assigned To", align: "center" },
-		    {name:"humanStatus",label:"Status",      align: "center" }
+		    {name:"extimation", label:"Extimation",  align: "left" }
 		];
 	</script>
 </head>

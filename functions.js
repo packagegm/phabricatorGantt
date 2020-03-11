@@ -3,6 +3,10 @@ taskAdapter = function(taskPhp) {
 	var tasks = [];
 	var links = [];
 
+	var SECONDS_IN_DAY = 86400;
+
+	var EXTIMATION_DAYS_THRESHOLD = 1;
+
 	var data = taskPhp;
 
 	for (var dataEl = 0; dataEl < data.length; dataEl++) {
@@ -21,18 +25,35 @@ taskAdapter = function(taskPhp) {
 				duration = 1;
 			}
 
-			var taskID = "T" + task.id;
+			var taskID = 'T' + task.id;
+
+			var openClose = dateClosed ? '✓' : '';
 
 			tmpTask.id = task.phid;
 			tmpTask.text = task.fields.name;
-			tmpTask.link = "<a href=" + BASE_URL + taskID + " target=\"_blank\">" + taskID + "</a>";
+			tmpTask.link = "<a href=" + BASE_URL + taskID + " target=\"_blank\">" + taskID + "</a>" + ' ' + openClose;
 			tmpTask.description = task.fields.description.raw;
 			tmpTask.start_date = timestampToDate( dateCreated );
 			tmpTask.end_date = timestampToDate( deadline );
-			tmpTask.progress = 0;
 			tmpTask.open = !dateClosed;
-			tmpTask.humanStatus = tmpTask.open ? "Open" : "Closed";
+			tmpTask.progress = tmpTask.open ? 0 : 1;
 			tmpTask.holder = users[task.fields.ownerPHID];
+
+			/**
+			 * Check extimation
+			 */
+			if( dateClosed ) {
+				var dateClosedMinusDeadline = parseInt( ( deadline - dateClosed ) / SECONDS_IN_DAY );
+				if( dateClosedMinusDeadline > EXTIMATION_DAYS_THRESHOLD ) {
+					tmpTask.extimation = "OVERstimated +" + dateClosedMinusDeadline;
+				} else if( dateClosedMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
+					tmpTask.extimation = "UNDERstimated -" + dateClosedMinusDeadline;
+				} else {
+					tmpTask.extimation = "In Time";
+				}
+			} else {
+				tmpTask.extimation = '';
+			}
 
 			tasks.push(tmpTask);
 
