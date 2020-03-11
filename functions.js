@@ -3,13 +3,14 @@ taskAdapter = function(taskPhp) {
 	var tasks = [];
 	var links = [];
 
-	var data = taskPhp.data;
+	var data = taskPhp;
 
 	for (var dataEl = 0; dataEl < data.length; dataEl++) {
 		var task = data[dataEl];
 		var tmpTask = {};
 
 		var dateCreated = task.fields.dateCreated;
+		var dateClosed  = task.fields.dateClosed;
 		var deadline    = task.fields[ 'custom.deadline' ];
 
 		// no deadline no party
@@ -29,7 +30,7 @@ taskAdapter = function(taskPhp) {
 			tmpTask.start_date = timestampToDate( dateCreated );
 			tmpTask.end_date = timestampToDate( deadline );
 			tmpTask.progress = 0;
-			tmpTask.open = true;
+			tmpTask.open = !!dateClosed;
 			tmpTask.holder = users[task.fields.ownerPHID];
 
 			tasks.push(tmpTask);

@@ -24,11 +24,22 @@ function conduit() {
  * Query all the Maniphest Tasks
  */
 function query_tasks() {
-	return conduit()
-		->callMethodSynchronous( 'maniphest.search', [
-			'queryKey' => 'open',
-			'order'    => 'newest',
-		] );
+	$deadline_tasks = [];
+
+	$tasks =
+		conduit()
+			->callMethodSynchronous( 'maniphest.search', [
+				'queryKey' => 'open',
+				'order'    => 'newest',
+			] );
+
+	foreach( $tasks['data'] as $task ) {
+		if( isset( $task['fields']['custom.deadline'] ) ) {
+			$deadline_tasks[] = $task;
+		}
+	}
+
+	return $deadline_tasks;
 }
 
 /**
