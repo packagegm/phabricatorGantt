@@ -30,7 +30,8 @@ taskAdapter = function(taskPhp) {
 			tmpTask.start_date = timestampToDate( dateCreated );
 			tmpTask.end_date = timestampToDate( deadline );
 			tmpTask.progress = 0;
-			tmpTask.open = !!dateClosed;
+			tmpTask.open = !dateClosed;
+			tmpTask.humanStatus = tmpTask.open ? "Open" : "Closed";
 			tmpTask.holder = users[task.fields.ownerPHID];
 
 			tasks.push(tmpTask);

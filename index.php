@@ -50,7 +50,8 @@ $users = query_users();
 		    {name:"link",       label:"Task", align: "center" },
 /*		    {name:"start_date", label:"Start time", align: "center" }, */
 		    {name:"end_date",   label:"Deadline",   align: "center" },
-		    {name:"holder",     label:"Assigned To", align: "center" }
+		    {name:"holder",     label:"Assigned To", align: "center" },
+		    {name:"humanStatus",label:"Status",      align: "center" }
 		];
 	</script>
 </head>
