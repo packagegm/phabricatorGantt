@@ -22,17 +22,23 @@ function conduit() {
 
 /**
  * Query all the Maniphest Tasks
+ *
+ * @param  array $constraints Additional query arguments
+ * @return array
  */
-function query_tasks() {
+function query_tasks( $constraints = [] ) {
 	$deadline_tasks = [];
 
-	$tasks =
-		conduit()
-			->callMethodSynchronous( 'maniphest.search', [
-//				'queryKey' => 'open',
-				'order'    => 'newest',
-			] );
+	// query arguments
+	$args = [
+		'order'       => 'newest',
+		'constraints' => $constraints,
+	];
 
+	// call the query
+	$tasks = conduit()->callMethodSynchronous( 'maniphest.search', $args );
+
+	// prepare the array of Tasks
 	foreach( $tasks['data'] as $task ) {
 		if( isset( $task['fields']['custom.deadline'] ) ) {
 			$deadline_tasks[] = $task;
@@ -70,4 +76,20 @@ function config( $attribute ) {
 	}
 
 	return $config;
+}
+
+/**
+ * Get and sanitize a GET parameter
+ *
+ * @return string
+ */
+function sanitize_GET_string( $arg ) {
+	$value = $_GET[ $arg ] ?? '';
+
+	// the value should be a string and should be short
+	if( !$value || !is_string( $value ) || strlen( $value ) > 500 ) {
+		$value = null;
+	}
+
+	return $value;
 }

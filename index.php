@@ -12,7 +12,17 @@ require 'config.php';
 // require the Arcanist utilities to talk with the APIs
 require config( 'ARCANIST_PATH' );
 
-$tasks = query_tasks();
+// read the GET parameters
+$assigned = sanitize_GET_string( 'assigned' );
+$project  = sanitize_GET_string( 'project'  );
+
+// query arguments
+$args = [
+	'assigned' => $assigned ? [ $assigned ] : [],
+	'projects' => $project  ? [ $project  ] : [],
+];
+
+$tasks = query_tasks( $args );
 $users = query_users();
 ?>
 <html>
@@ -57,8 +67,19 @@ $users = query_users();
 </head>
 <body>
 	<h1>Phabricator Deadlines</h1>
+
+	<form method="get">
+		<p>
+			<input type="text" name="assigned" placeholder="User.Name"    value="<?= htmlspecialchars( $assigned ) ?>" />
+			<input type="text" name="project"  placeholder="Project_Name" value="<?= htmlspecialchars( $project  ) ?>" />
+			<button type="submit">Filter</button>
+		</p>
+	</form>
+
 	<div id="gantt_here"></div>
+
 	<input value="Export to PDF" type="button" onclick='gantt.exportToPDF()'>
+
 	<script type="text/javascript">
 		/**
 		 * Space to be considered above the Gantt and eventually below
