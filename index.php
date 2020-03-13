@@ -57,13 +57,39 @@ $users = query_users();
 </head>
 <body>
 	<h1>Phabricator Deadlines</h1>
-	<div id="gantt_here" style='height:400px;'></div>
+	<div id="gantt_here"></div>
 	<input value="Export to PDF" type="button" onclick='gantt.exportToPDF()'>
 	<script type="text/javascript">
+		/**
+		 * Space to be considered above the Gantt and eventually below
+		 * to do not have a vertical scrollbar when enlarging the Gantt
+		 * to the current window height
+		 */
+		var UNUSEFUL_SPACE = 100;
+		var gantt_id = 'gantt_here';
+
 		var users = userAdapter(<?= json_encode( $users ) ?>);
 		var tasks = taskAdapter(<?= json_encode( $tasks ) ?>);
-		gantt.init("gantt_here");
+		gantt.init( gantt_id );
 		gantt.parse(tasks);
+
+		var ganttEl = document.getElementById( gantt_id );
+
+		/**
+		 * Adjust the Gantt height to the windows size
+		 */
+		function adjustLayout() {
+			var h = document.body.clientHeight - UNUSEFUL_SPACE;
+			ganttEl.style.height = h + 'px';
+		}
+
+		// adjust at startup
+		adjustLayout();
+
+		// adjust on layout change
+		window.addEventListener( 'resize', function( event ) {
+			adjustLayout();
+		} );
 	</script>
 </body>
 </html>
