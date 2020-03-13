@@ -47,7 +47,7 @@ taskAdapter = function(taskPhp) {
 				if( dateClosedMinusDeadline > EXTIMATION_DAYS_THRESHOLD ) {
 					tmpTask.extimation = "OVERstimated +" + dateClosedMinusDeadline;
 				} else if( dateClosedMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
-					tmpTask.extimation = "UNDERstimated -" + dateClosedMinusDeadline;
+					tmpTask.extimation = "UNDERstimated " + dateClosedMinusDeadline;
 				} else {
 					tmpTask.extimation = "In Time";
 				}
