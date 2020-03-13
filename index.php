@@ -86,7 +86,7 @@ $users = query_users();
 		 * to do not have a vertical scrollbar when enlarging the Gantt
 		 * to the current window height
 		 */
-		var UNUSEFUL_SPACE = 100;
+		var UNUSEFUL_SPACE = 200;
 		var gantt_id = 'gantt_here';
 
 		var users = userAdapter(<?= json_encode( $users ) ?>);
