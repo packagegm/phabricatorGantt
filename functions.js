@@ -7,6 +7,9 @@ taskAdapter = function(taskPhp) {
 
 	var EXTIMATION_DAYS_THRESHOLD = 1;
 
+	// actual timestamp
+	var NOW = ( +new Date() ) / 1000;
+
 	var data = taskPhp;
 
 	for (var dataEl = 0; dataEl < data.length; dataEl++) {
@@ -36,23 +39,48 @@ taskAdapter = function(taskPhp) {
 			tmpTask.start_date = timestampToDate( dateCreated );
 			tmpTask.end_date = timestampToDate( deadline );
 			tmpTask.open = !dateClosed;
-			tmpTask.progress = tmpTask.open ? 0 : 1;
+
+			// we currently does not indicate in this way the progress
+			tmpTask.progress = 0; //tmpTask.open ? 0 : 1;
+
 			tmpTask.holder = users[task.fields.ownerPHID];
 
 			/**
-			 * Check extimation
+			 * Create an extimation phrase
 			 */
-			if( dateClosed ) {
-				var dateClosedMinusDeadline = parseInt( ( deadline - dateClosed ) / SECONDS_IN_DAY );
-				if( dateClosedMinusDeadline > EXTIMATION_DAYS_THRESHOLD ) {
-					tmpTask.extimation = "OVERstimated +" + dateClosedMinusDeadline;
-				} else if( dateClosedMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
-					tmpTask.extimation = "UNDERstimated " + dateClosedMinusDeadline;
-				} else {
-					tmpTask.extimation = "In Time";
-				}
+			tmpTask.extimation = '';
+
+			// difference between the deadline and the closed timestamp
+			var dateClosedMinusDeadline = dateClosed && parseInt( ( deadline - dateClosed ) / SECONDS_IN_DAY );
+
+			// difference between the deadline and now
+			var nowMinusDeadline = parseInt( ( deadline - NOW ) / SECONDS_IN_DAY );
+
+			/**
+			 * Visually distinguish the situations
+			 *
+			 * See https://sviluppo.erinformatica.it/T342
+			 */
+			if( dateClosedMinusDeadline > EXTIMATION_DAYS_THRESHOLD ) {
+				// task closed before deadline: OVERstimated
+				tmpTask.extimation = "OVERstimated +" + dateClosedMinusDeadline;
+				tmpTask.color = '#bbdefb'; // blue lighten-4
+			} else if( dateClosedMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
+				// task closed after deadline: UNDERstimated
+				tmpTask.extimation = "UNDERstimated " + dateClosedMinusDeadline;
+				tmpTask.color = '#ffccbc'; // deep-orange lighten-4
+			} else if( nowMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
+				// task running after deadline: UNDERstimated
+				tmpTask.extimation = "UNDERstimated " + nowMinusDeadline;
+				tmpTask.color = '#ff7043'; // deep-orange lighten-1
+			} else if( dateClosed ) {
+				// task closed in time
+				tmpTask.extimation = "In Time";
+				tmpTask.color = '#f1f8e9'; // light-green lighten-5
 			} else {
-				tmpTask.extimation = '';
+				// task running in time (before deadline)
+				tmpTask.extimation = "In Time";
+				tmpTask.color = '#8bc34a'; // light-green
 			}
 
 			tasks.push(tmpTask);
