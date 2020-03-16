@@ -18,4 +18,8 @@ $CONFIG = [
 
 	// Arcanist pathname:
 	'ARCANIST_PATH'     => '../arcanist/src/__phutil_library_init__.php',
+
+	// set to true if you plan to expose this application in the same domain
+	// used by your Phabricator instance (and not a subdomain, or different port, etc.)
+	'SHARE_PHABRICATOR_DOMAIN' => false,
 ];

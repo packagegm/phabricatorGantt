@@ -19,6 +19,12 @@ taskAdapter = function(taskPhp) {
 		var dateCreated = task.fields.dateCreated;
 		var dateClosed  = task.fields.dateClosed;
 		var deadline    = task.fields[ 'custom.deadline' ];
+		var endDate     = deadline;
+
+		// avoit tasks shorter than one day
+		if( endDate - dateCreated < SECONDS_IN_DAY ) {
+			endDate = dateCreated + SECONDS_IN_DAY;
+		}
 
 		// no deadline no party
 		if( deadline ) {
@@ -32,7 +38,7 @@ taskAdapter = function(taskPhp) {
 			tmpTask.link = "<a href=" + BASE_URL + taskID + " target=\"_blank\">" + taskID + "</a>" + ' ' + openClose;
 			tmpTask.description = task.fields.description.raw;
 			tmpTask.start_date = timestampToDate( dateCreated );
-			tmpTask.end_date = timestampToDate( deadline );
+			tmpTask.end_date = timestampToDate( endDate );
 			tmpTask.open = !dateClosed;
 
 			// we currently does not indicate in this way the progress
@@ -124,4 +130,99 @@ timestampToDate = function(unix_timestamp) {
 		}
 	}
 	return date.join("-");
+};
+
+function prepareAutocompletes() {
+	// TODO
 }
+
+/**
+ * Query Phabricator Users by name
+ *
+ * This method works if you expose this script in a subdirectory of Phabricator.
+ *
+ * @param {String}} query
+ * @return {Promise}
+ */
+queryPhabricatorUsersByName = function ( query ) {
+
+	// example.com//typeahead/class/PhabricatorPeopleDatasource/?q=foo&raw=foo&__ajax__=true
+	var url = '/typeahead/class/PhabricatorPeopleDatasource/';
+
+	return requestPhabricatorWeirdAPIGETRequest( url, {
+		q: query,
+		raw: query,
+		__ajax__: 'true',
+	} );
+};
+
+/**
+ * Do an HTTP GET request over weird Phabricator APIs
+ *
+ * @param  {String} url
+ * @param  {Object} args Arguments
+ * @return {Promise}
+ */
+function requestPhabricatorWeirdAPIGETRequest( url, args ) {
+
+
+	url += '?' + createURLParams( args );
+
+	return new Promise( function( resolve, reject ) {
+
+		var xhr = new XMLHttpRequest();
+		xhr.open( 'GET', url );
+
+		xhr.onload = function() {
+			// check the HTTP status code
+			if (xhr.status == 200) {
+				// resolve the promise with the response text
+				resolve( normalizeWeirdPhabricatorJSON( xhr.response ) );
+			} else {
+				// otherwise reject with the status text
+				reject( Error( xhr.statusText ) );
+			}
+		};
+
+		// handle network errors
+		xhr.onerror = function() {
+			reject(Error("Network Error"));
+		};
+
+		// make the request
+		xhr.send();
+	} );
+}
+
+/**
+ * Phabricator has a weird but original way to circumvent the
+ * JSON-hijacking vulnerability. It puts an infinite JS loop
+ * in every JSON requests.
+ *
+ * See https://secure.phabricator.com/source/phabricator/browse/master/src/aphront/response/AphrontResponse.php;62f5bdbbd2c55e42c85bde52a72784faa07996b6$349
+ *
+ * @param  {String} response
+ * @return {Object}
+ */
+function normalizeWeirdPhabricatorJSON( response ) {
+
+	// strip this f****** "shield"
+	var SHIELD = 'for (;;);';
+	if( response.indexOf( SHIELD ) === 0 ) {
+		response = response.substring( 0, SHIELD.length );
+	} else {
+		console.log( "shield not found? API changed?" );
+	}
+
+	return JSON.parse( response );
+};
+
+/**
+ * Vanilla JS implementation of jQuery.params()
+ *
+ * @return string
+ */
+function createURLParams( args ) {
+	var params = new URLSearchParams( Object.entries( args ) );
+	return params.toString();
+};

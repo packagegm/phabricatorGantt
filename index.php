@@ -89,12 +89,19 @@ $users = query_users();
 		var UNUSEFUL_SPACE = 200;
 		var gantt_id = 'gantt_here';
 
+		// check if this page can try to access Phabricator APIs
+		var SHARE_PHABRICATOR_DOMAIN = <?= json_encode( config( 'SHARE_PHABRICATOR_DOMAIN' ) ) ?>;
+
 		var users = userAdapter(<?= json_encode( $users ) ?>);
 		var tasks = taskAdapter(<?= json_encode( $tasks ) ?>);
 		gantt.init( gantt_id );
 		gantt.parse(tasks);
 
 		var ganttEl = document.getElementById( gantt_id );
+
+		if( SHARE_PHABRICATOR_DOMAIN ) {
+			prepareAutocompletes();
+		}
 
 		/**
 		 * Adjust the Gantt height to the windows size
