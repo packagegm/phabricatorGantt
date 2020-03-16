@@ -45,6 +45,11 @@ function query_tasks( $constraints = [] ) {
 		}
 	}
 
+	// sort by deadline
+	usort( $deadline_tasks, function ( $a, $b ) {
+		return $b['fields']['custom.deadline'] <=> $a['fields']['custom.deadline'];
+	} );
+
 	return $deadline_tasks;
 }
 
