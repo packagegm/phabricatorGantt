@@ -56,11 +56,11 @@ taskAdapter = function(taskPhp) {
 			 *
 			 * See https://sviluppo.erinformatica.it/T342
 			 */
-			if( dateClosedMinusDeadline > EXTIMATION_DAYS_THRESHOLD ) {
+			if( dateClosedMinusDeadline && dateClosedMinusDeadline > EXTIMATION_DAYS_THRESHOLD ) {
 				// task closed before deadline: OVERstimated
 				tmpTask.extimation = "OVERstimated +" + dateClosedMinusDeadline;
 				tmpTask.color = '#bbdefb'; // blue lighten-4
-			} else if( dateClosedMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
+			} else if( dateClosedMinusDeadline && dateClosedMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
 				// task closed after deadline: UNDERstimated
 				tmpTask.extimation = "UNDERstimated " + dateClosedMinusDeadline;
 				tmpTask.color = '#ffccbc'; // deep-orange lighten-4
