@@ -23,11 +23,6 @@ taskAdapter = function(taskPhp) {
 		// no deadline no party
 		if( deadline ) {
 
-			var duration = parseInt( ( deadline - dateCreated ) / 86400 );
-			if( duration < 1 ) {
-				duration = 1;
-			}
-
 			var taskID = 'T' + task.id;
 
 			var openClose = dateClosed ? '✓' : '';
