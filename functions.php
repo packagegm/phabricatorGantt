@@ -73,7 +73,7 @@ function config( $attribute ) {
 	$config = $GLOBALS['CONFIG'][ $attribute ] ?? null;
 
 	// no config no party
-	if( !$config ) {
+	if( $config === null ) {
 		throw new Exception( sprintf(
 			"Missing configuration for %s from config.php",
 			$attribute
