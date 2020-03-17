@@ -185,10 +185,14 @@ function requestPhabricatorWeirdAPIGETRequest( api, query ) {
  * @return {Array} Array of Option
  */
 function adaptPhabProjectsToSelectOptions( results ) {
-	var data, options = [];
+	var data, uid, options = [];
 	for( var i = 0; i < results.length; i++ ) {
 		data = results[i];
-		options.push( new Option( data[4], data[4] ) );
+
+		uid = data[14]; // #project_name
+		uid = uid.replace( '#', '' ); // avoid hashtag
+
+		options.push( new Option( data[4], uid ) );
 	}
 	return options;
 }
