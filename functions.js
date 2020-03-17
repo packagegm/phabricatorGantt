@@ -258,8 +258,9 @@ var KISSAutocomplete = {
 	 * @param search       Text input element
 	 * @param autocomplete Select input element
 	 * @param callback     Function that should accept a query parameter return an Promise returning an array of Option
+	 * @param onSelected   Function that will be called when an element is selected from the autocomplete
 	 */
-	init: function( search, autocomplete, callback ) {
+	init: function( search, autocomplete, callback, onSelected ) {
 		var timeout = null;
 		var KISSAutocomplete = this;
 
@@ -285,6 +286,11 @@ var KISSAutocomplete = {
 
 				// hide the autocomplete
 				KISSAutocomplete.clearAutocomplete( autocomplete );
+
+				// callback useful to detect when the user pick an element
+				if( onSelected ) {
+					onSelected( search, autocomplete, value );
+				}
 			}
 		} );
 

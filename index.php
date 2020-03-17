@@ -68,7 +68,7 @@ $users = query_users();
 <body>
 	<h1>Phabricator Deadlines</h1>
 
-	<form method="get">
+	<form method="get" id="filter-form">
 		<p>
 			<input type="text" name="assigned" id="assigned-search" placeholder="Search User" value="<?= htmlspecialchars( $assigned ) ?>" />
 			<select type="select" id="assigned-autocomplete"></select>
@@ -92,7 +92,7 @@ $users = query_users();
 		 * to do not have a vertical scrollbar when enlarging the Gantt
 		 * to the current window height
 		 */
-		var UNUSEFUL_SPACE = 200;
+		var UNUSEFUL_SPACE = 300;
 		var gantt_id = 'gantt_here';
 
 		// check if this page can try to access Phabricator APIs
@@ -109,6 +109,14 @@ $users = query_users();
 		var projectSearch        = document.getElementById( 'project-search' );
 		var assignedAutocomplete = document.getElementById( 'assigned-autocomplete' );
 		var projectAutocomplete  = document.getElementById( 'project-autocomplete' );
+		var filterForm           = document.getElementById( 'filter-form' );
+
+		/**
+		 * Submit the filter form
+		 */
+		function submitFilterForm() {
+			filterForm.submit();
+		};
 
 		// if your installation is near Phabricator, you can enable this feature
 		if( SHARE_PHABRICATOR_DOMAIN ) {
@@ -117,13 +125,13 @@ $users = query_users();
 			KISSAutocomplete.init( assignedSearch, assignedAutocomplete, function( query ) {
 				return requestPhabricatorWeirdAPIGETRequest( 'PhabricatorPeopleDatasource', query )
 					.then( adaptPhabUsersToSelectOptions )
-			} );
+			}, submitFilterForm );
 
 			// initialize the Projects autocomplete
 			KISSAutocomplete.init( projectSearch, projectAutocomplete, function( query ) {
 				return requestPhabricatorWeirdAPIGETRequest( 'PhabricatorProjectDatasource', query )
 					.then( adaptPhabProjectsToSelectOptions );
-			} );
+			}, submitFilterForm );
 		} else {
 			// these autocompletes are unuseful for you because they will not work
 			assignedAutocomplete.style.visibility = 'hidden';
