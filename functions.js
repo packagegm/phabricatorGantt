@@ -66,22 +66,27 @@ taskAdapter = function(taskPhp) {
 				// task closed before deadline: OVERstimated
 				tmpTask.extimation = "OVERstimated +" + dateClosedMinusDeadline;
 				tmpTask.color = '#bbdefb'; // blue lighten-4
+				tmpTask.textColor = 'grey';
 			} else if( dateClosedMinusDeadline && dateClosedMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
 				// task closed after deadline: UNDERstimated
 				tmpTask.extimation = "UNDERstimated " + dateClosedMinusDeadline;
 				tmpTask.color = '#ffccbc'; // deep-orange lighten-4
+				tmpTask.textColor = 'grey';
 			} else if( nowMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
 				// task running after deadline: UNDERstimated
 				tmpTask.extimation = "UNDERstimated " + nowMinusDeadline;
 				tmpTask.color = '#ff7043'; // deep-orange lighten-1
+				tmpTask.textColor = 'black';
 			} else if( dateClosed ) {
 				// task closed in time
 				tmpTask.extimation = "In Time";
-				tmpTask.color = '#f1f8e9'; // light-green lighten-5
+				tmpTask.color = '#dcedc8'; // light-green lighten-4
+				tmpTask.textColor = 'grey';
 			} else {
 				// task running in time (before deadline)
 				tmpTask.extimation = "In Time";
 				tmpTask.color = '#8bc34a'; // light-green
+				tmpTask.textColor = 'black';
 			}
 
 			tasks.push(tmpTask);
