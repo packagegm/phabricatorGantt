@@ -72,7 +72,7 @@ taskAdapter = function(taskPhp) {
 				tmpTask.extimation = "UNDERstimated " + dateClosedMinusDeadline;
 				tmpTask.color = '#ffccbc'; // deep-orange lighten-4
 				tmpTask.textColor = 'grey';
-			} else if( nowMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
+			} else if( !dateClosed && nowMinusDeadline < -EXTIMATION_DAYS_THRESHOLD ) {
 				// task running after deadline: UNDERstimated
 				tmpTask.extimation = "UNDERstimated " + nowMinusDeadline;
 				tmpTask.color = '#ff7043'; // deep-orange lighten-1
