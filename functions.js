@@ -132,50 +132,34 @@ timestampToDate = function(unix_timestamp) {
 	return date.join("-");
 };
 
-function prepareAutocompletes() {
-	// TODO
-}
-
-/**
- * Query Phabricator Users by name
- *
- * This method works if you expose this script in a subdirectory of Phabricator.
- *
- * @param {String}} query
- * @return {Promise}
- */
-queryPhabricatorUsersByName = function ( query ) {
-
-	// example.com//typeahead/class/PhabricatorPeopleDatasource/?q=foo&raw=foo&__ajax__=true
-	var url = '/typeahead/class/PhabricatorPeopleDatasource/';
-
-	return requestPhabricatorWeirdAPIGETRequest( url, {
-		q: query,
-		raw: query,
-		__ajax__: 'true',
-	} );
-};
-
 /**
  * Do an HTTP GET request over weird Phabricator APIs
  *
- * @param  {String} url
- * @param  {Object} args Arguments
+ * @param  {String} api   Phabricator Typeahead API endpoint
+ * @param  {String} query Query
  * @return {Promise}
  */
-function requestPhabricatorWeirdAPIGETRequest( url, args ) {
+function requestPhabricatorWeirdAPIGETRequest( api, query ) {
 
+	// API query string
+	var args = {
+		q:        query,
+		raw:      query,
+		__ajax__: 'true',
+	};
 
-	url += '?' + createURLParams( args );
+	// example.com/typeahead/class/PhabricatorProjectDatasource/?q=foo&raw=foo&__ajax__=true&__metablock__=5
+	var url = '/typeahead/class/' + api + '/?' + createURLParams( args );
 
 	return new Promise( function( resolve, reject ) {
 
+		// initialize the request
 		var xhr = new XMLHttpRequest();
 		xhr.open( 'GET', url );
 
 		xhr.onload = function() {
 			// check the HTTP status code
-			if (xhr.status == 200) {
+			if ( xhr.status == 200 ) {
 				// resolve the promise with the response text
 				resolve( normalizeWeirdPhabricatorJSON( xhr.response ) );
 			} else {
@@ -186,12 +170,42 @@ function requestPhabricatorWeirdAPIGETRequest( url, args ) {
 
 		// handle network errors
 		xhr.onerror = function() {
-			reject(Error("Network Error"));
+			reject( Error( 'network error' ) );
 		};
 
 		// make the request
 		xhr.send();
 	} );
+};
+
+/**
+ * Convert some Phabricator Tyhead Projects results to some HTML <option>s
+ *
+ * @param  {Array} Projects
+ * @return {Array} Array of Option
+ */
+function adaptPhabProjectsToSelectOptions( results ) {
+	var data, options = [];
+	for( var i = 0; i < results.length; i++ ) {
+		data = results[i];
+		options.push( new Option( data[4], data[4] ) );
+	}
+	return options;
+}
+
+/**
+ * Convert some Phabricator Tyhead Projects results to some HTML <option>s
+ *
+ * @param  {Array} Users
+ * @return {Array} Array of Option
+ */
+function adaptPhabUsersToSelectOptions( results ) {
+	var data, options = [];
+	for( var i = 0; i < results.length; i++ ) {
+		data = results[i];
+		options.push( new Option( data[0], data[3] ) );
+	}
+	return options;
 }
 
 /**
@@ -199,22 +213,34 @@ function requestPhabricatorWeirdAPIGETRequest( url, args ) {
  * JSON-hijacking vulnerability. It puts an infinite JS loop
  * in every JSON requests.
  *
- * See https://secure.phabricator.com/source/phabricator/browse/master/src/aphront/response/AphrontResponse.php;62f5bdbbd2c55e42c85bde52a72784faa07996b6$349
- *
  * @param  {String} response
  * @return {Object}
  */
 function normalizeWeirdPhabricatorJSON( response ) {
 
-	// strip this f****** "shield"
+	/**
+	 * Strip this f****** "shield"
+	 *
+	 * See https://secure.phabricator.com/source/phabricator/browse/master/src/aphront/response/AphrontResponse.php;62f5bdbbd2c55e42c85bde52a72784faa07996b6$349
+	 */
 	var SHIELD = 'for (;;);';
 	if( response.indexOf( SHIELD ) === 0 ) {
-		response = response.substring( 0, SHIELD.length );
+		response = response.substring( SHIELD.length );
 	} else {
-		console.log( "shield not found? API changed?" );
+		console.log( "shield not found? API changed?", response );
 	}
 
-	return JSON.parse( response );
+	// for some strange reasons there are some DAMN unescaped newlines
+	response = response.replace( /\n/g, '' );
+
+	// the data is JSON encoded and encapsulated inside a payload
+	var data = JSON.parse( response );
+	var payload = data.payload;
+	if( !payload ) {
+		console.error( 'bad result', data );
+		throw 'Must have a payload from Phabricator API';
+	}
+	return payload;
 };
 
 /**
@@ -225,4 +251,89 @@ function normalizeWeirdPhabricatorJSON( response ) {
 function createURLParams( args ) {
 	var params = new URLSearchParams( Object.entries( args ) );
 	return params.toString();
+};
+
+var KISSAutocomplete = {
+	/**
+	 * @param search       Text input element
+	 * @param autocomplete Select input element
+	 * @param callback     Function that should accept a query parameter return an Promise returning an array of Option
+	 */
+	init: function( search, autocomplete, callback ) {
+		var timeout = null;
+		var KISSAutocomplete = this;
+
+		// at every keystroke
+		search.addEventListener( 'keyup', function() {
+
+			// wait then call API
+			if( timeout ) {
+				clearTimeout( timeout );
+			}
+			timeout = setTimeout( function() {
+				var query = search.value;
+				KISSAutocomplete.populateAutocompleteAfterCallback( search, autocomplete, callback( query ) );
+			}, 500 );
+		} );
+
+		// when an autocomplete element is selected
+		autocomplete.addEventListener( 'change', function() {
+			var value = autocomplete.value;
+			if( value ) {
+				// save its value
+				search.value = value;
+
+				// hide the autocomplete
+				KISSAutocomplete.clearAutocomplete( autocomplete );
+			}
+		} );
+
+		// initialize the autocomplete
+		this.clearAutocomplete( autocomplete );
+	},
+	/**
+	 * Populate the autocomplete after the Promise callback will be resolved
+	 *
+	 * @param search       Text input element
+	 * @param autocomplete Select input element
+	 * @param callback     Promise function that should return an array of Option
+	 */
+	populateAutocompleteAfterCallback: function( search, autocomplete, callback ) {
+
+		var KISSAutocomplete = this;
+
+		// call the API or whatever and return an array of { label:, value: }
+		callback.then( function( options ) {
+
+			// clear the autocomplete
+			KISSAutocomplete.clearAutocomplete( autocomplete );
+
+			// add a fake option
+			var fakeOption = new Option( "Choose" );
+			fakeOption.disabled = true;
+			fakeOption.selected = true;
+			autocomplete.options.add( fakeOption );
+
+			// append the new ones
+			for( var i = 0; i < options.length; i++ ) {
+				autocomplete.options.add( options[i] );
+			}
+
+			// show again the autocomplete
+			autocomplete.style.visibility = 'visible';
+		} );
+	},
+	/**
+	 * Clear an autocomplete
+	 */
+	clearAutocomplete: function( autocomplete ) {
+
+		// hide the autocomplete
+		autocomplete.style.visibility = "hidden";
+
+		// clear old autocomplete options
+		while ( autocomplete.options.length > 0 ) {
+			autocomplete.remove( 0 );
+		}
+	},
 };

@@ -70,8 +70,14 @@ $users = query_users();
 
 	<form method="get">
 		<p>
-			<input type="text" name="assigned" placeholder="User.Name"    value="<?= htmlspecialchars( $assigned ) ?>" />
-			<input type="text" name="project"  placeholder="Project_Name" value="<?= htmlspecialchars( $project  ) ?>" />
+			<input type="text" name="assigned" id="assigned-search" placeholder="Search User" value="<?= htmlspecialchars( $assigned ) ?>" />
+			<select type="select" id="assigned-autocomplete"></select>
+		</p>
+		<p>
+			<input type="text" name="project" id="project-search" placeholder="Project_Name" value="<?= htmlspecialchars( $project ) ?>" />
+			<select type="select" id="project-autocomplete"></select>
+		</p>
+		<p>
 			<button type="submit">Filter</button>
 		</p>
 	</form>
@@ -99,8 +105,29 @@ $users = query_users();
 
 		var ganttEl = document.getElementById( gantt_id );
 
+		var assignedSearch       = document.getElementById( 'assigned-search' );
+		var projectSearch        = document.getElementById( 'project-search' );
+		var assignedAutocomplete = document.getElementById( 'assigned-autocomplete' );
+		var projectAutocomplete  = document.getElementById( 'project-autocomplete' );
+
+		// if your installation is near Phabricator, you can enable this feature
 		if( SHARE_PHABRICATOR_DOMAIN ) {
-			prepareAutocompletes();
+
+			// initialize the Users autocomplete
+			KISSAutocomplete.init( assignedSearch, assignedAutocomplete, function( query ) {
+				return requestPhabricatorWeirdAPIGETRequest( 'PhabricatorPeopleDatasource', query )
+					.then( adaptPhabUsersToSelectOptions )
+			} );
+
+			// initialize the Projects autocomplete
+			KISSAutocomplete.init( projectSearch, projectAutocomplete, function( query ) {
+				return requestPhabricatorWeirdAPIGETRequest( 'PhabricatorProjectDatasource', query )
+					.then( adaptPhabProjectsToSelectOptions );
+			} );
+		} else {
+			// these autocompletes are unuseful for you because they will not work
+			assignedAutocomplete.style.visibility = 'hidden';
+			projectAutocomplete.style.visibility  = 'hidden';
 		}
 
 		/**

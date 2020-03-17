@@ -24,7 +24,7 @@ http://EXAMPLE.org/config/edit/maniphest.custom-field-definitions/
 }
 ```
 
-Then you will need to create a bot user to access tasks externally from this page:
+Then you will need to create a bot user to access tasks externally from this page. Create a "Gantt Bot" user.
 
 http://EXAMPLE.org/people/create/
 
@@ -38,7 +38,7 @@ The Arcanist library is needed to communicate with Phabricator:
 git clone https://secure.phabricator.com/diffusion/ARC/arcanist.git
 ```
 
-Then copy the file `config-example.php` to `config.php` and fill it with your Phabricator's domain and conduit API token.
+Then copy the file `config-example.php` to `config.php`. Fill the configuration with your Phabricator's domain, the conduit API token of your "Gantt Bot" user, etc.
 
 Happy Planning!
 
