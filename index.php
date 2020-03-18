@@ -45,8 +45,30 @@ $users = query_users();
 		gantt.config.grid_width = 600;
 		gantt.config.readonly = true;
 		gantt.locale.labels.section_template = "Task";
-		gantt.templates.task_text = function(start,end,task) {
-			return "<b>" + task.text + "</b>";
+
+		/**
+		 * The Task text has an hoverable title
+		 */
+		gantt.templates.task_text = function( start, end, task ) {
+
+			var titleSafe = htmlEntities( task.text );
+			var titleSafeAttr = titleSafe.replace( '"', '' );
+
+			return '<b title="' + titleSafeAttr + '">' + titleSafe + '</b>';
+		};
+
+		/**
+		 * Put the Task holder on the left
+		 */
+		gantt.templates.leftside_text = function( start, end, task ) {
+			return htmlEntities( task.holder );
+		};
+
+		/**
+		 * Put the extimation on the right
+		 */
+		gantt.templates.rightside_text = function( start, end, task ) {
+			return task.extimation;
 		};
 /*
 		gantt.config.lightbox.sections = [

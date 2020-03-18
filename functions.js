@@ -23,9 +23,9 @@ taskAdapter = function(taskPhp) {
 		var startDate     = officialStart || dateCreated;
 		var endDate       = deadline;
 
-		// avoid tasks shorter than one day
+		// avoid tasks shorter than half day
 		if( endDate - startDate < SECONDS_IN_DAY ) {
-			endDate = startDate + SECONDS_IN_DAY;
+			endDate = startDate + parseInt( SECONDS_IN_DAY / 2 );
 		}
 
 		// no deadline no party
@@ -345,4 +345,24 @@ var KISSAutocomplete = {
 			autocomplete.remove( 0 );
 		}
 	},
+};
+
+/**
+ * Sanitize an HTML string
+ *
+ * @param  {String} unsafeString
+ * @return {String}
+ */
+function htmlEntities( unsafeString ) {
+
+	// eventually initialize a dummy HTML element to sanitize strings
+	if( !this.p ) {
+		this.p = document.createElement( 'p' );
+	}
+
+	// set the text
+	this.p.textContent = unsafeString;
+
+	// return the sanitized text
+	return this.p.innerHTML;
 };
