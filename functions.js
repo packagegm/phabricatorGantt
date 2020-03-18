@@ -126,15 +126,7 @@ userAdapter = function(taskPhp) {
 
 
 timestampToDate = function(unix_timestamp) {
-	var now = new Date(unix_timestamp * 1000);
-	// Create an array with the current month, day and time
-	var date = [now.getDate(), now.getMonth() + 1, now.getFullYear()];
-	for (var i = 0; i < 3; i++) {
-		if (date[i] < 10) {
-			date[i] = "0" + date[i];
-		}
-	}
-	return date.join("-");
+	return new Date(unix_timestamp * 1000);
 };
 
 /**
