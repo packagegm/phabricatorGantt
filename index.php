@@ -68,7 +68,7 @@ $users = query_users();
 		 * Put the extimation on the right
 		 */
 		gantt.templates.rightside_text = function( start, end, task ) {
-			return task.extimation;
+			return '<b>' + task.extimation + '</b>';
 		};
 /*
 		gantt.config.lightbox.sections = [

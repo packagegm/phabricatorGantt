@@ -81,12 +81,12 @@ taskAdapter = function(taskPhp) {
 				tmpTask.textColor = 'black';
 			} else if( dateClosed ) {
 				// task closed in time
-				tmpTask.extimation = "In Time";
+				tmpTask.extimation = ''; // "In Time";
 				tmpTask.color = '#dcedc8'; // light-green lighten-4
 				tmpTask.textColor = 'grey';
 			} else {
 				// task running in time (before deadline)
-				tmpTask.extimation = "In Time";
+				tmpTask.extimation = ''; // "In Time";
 				tmpTask.color = '#8bc34a'; // light-green
 				tmpTask.textColor = 'black';
 			}
