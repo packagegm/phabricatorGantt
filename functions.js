@@ -16,14 +16,16 @@ taskAdapter = function(taskPhp) {
 		var task = data[dataEl];
 		var tmpTask = {};
 
-		var dateCreated = task.fields.dateCreated;
-		var dateClosed  = task.fields.dateClosed;
-		var deadline    = task.fields[ 'custom.deadline' ];
-		var endDate     = deadline;
+		var officialStart = task.fields[ 'custom.startdate' ];
+		var deadline      = task.fields[ 'custom.deadline' ];
+		var dateCreated   = task.fields.dateCreated;
+		var dateClosed    = task.fields.dateClosed;
+		var startDate     = officialStart || dateCreated;
+		var endDate       = deadline;
 
-		// avoit tasks shorter than one day
-		if( endDate - dateCreated < SECONDS_IN_DAY ) {
-			endDate = dateCreated + SECONDS_IN_DAY;
+		// avoid tasks shorter than one day
+		if( endDate - startDate < SECONDS_IN_DAY ) {
+			endDate = startDate + SECONDS_IN_DAY;
 		}
 
 		// no deadline no party
@@ -37,7 +39,7 @@ taskAdapter = function(taskPhp) {
 			tmpTask.text = task.fields.name;
 			tmpTask.link = "<a href=" + BASE_URL + taskID + " target=\"_blank\">" + taskID + "</a>" + ' ' + openClose;
 			tmpTask.description = task.fields.description.raw;
-			tmpTask.start_date = timestampToDate( dateCreated );
+			tmpTask.start_date = timestampToDate( startDate );
 			tmpTask.end_date = timestampToDate( endDate );
 			tmpTask.open = !dateClosed;
 

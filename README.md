@@ -10,16 +10,28 @@ Configure Phabricator
 ---------------------
 
 Gantt Diagrams need some additional fields Phabricator does not offer by default, however,
-Phabricator provides a very good and extensible framework; to add this JSON to this page:
+Phabricator provides a very good and extensible framework and we can add some fields.
+
+* Expected Start: to eventually plan the start of work (for your coworkers or for your Project Manager)
+* Deadline: planned date for the end of the works (useful for you or for your Project Manager)
+
+Go to this page and paste this JSON:
 
 http://EXAMPLE.org/config/edit/maniphest.custom-field-definitions/
 
 ```
 {
+  "startdate": {
+    "name": "Expected Start",
+    "caption": "The Expected Start is WHEN someone should START working on this (default: Task creation date).",
+    "type": "date",
+    "required": false
+  },
   "deadline": {
-"name": "Deadline",
-"type": "date",
-"required": false
+    "name": "Deadline",
+    "caption": "The Deadline is WHEN someone should END working on this.",
+    "type": "date",
+    "required": false
   }
 }
 ```
