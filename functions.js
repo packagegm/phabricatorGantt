@@ -16,8 +16,8 @@ taskAdapter = function(taskPhp) {
 		var task = data[dataEl];
 		var tmpTask = {};
 
-		var officialStart = task.fields[ 'custom.startdate' ];
-		var deadline      = task.fields[ 'custom.deadline' ];
+		var officialStart = task.fields[ 'custom.feature.planTime' ];
+		var deadline      = task.fields[ 'custom.feature.deadline' ];
 		var dateCreated   = task.fields.dateCreated;
 		var dateClosed    = task.fields.dateClosed;
 		var startDate     = officialStart || dateCreated;

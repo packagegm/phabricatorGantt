@@ -40,14 +40,14 @@ function query_tasks( $constraints = [] ) {
 
 	// prepare the array of Tasks
 	foreach( $tasks['data'] as $task ) {
-		if( isset( $task['fields']['custom.deadline'] ) ) {
+		if( isset( $task['fields']['custom.feature.deadline'] ) ) {
 			$deadline_tasks[] = $task;
 		}
 	}
 
 	// sort by deadline
 	usort( $deadline_tasks, function ( $a, $b ) {
-		return $b['fields']['custom.deadline'] <=> $a['fields']['custom.deadline'];
+		return $b['fields']['custom.feature.deadline'] <=> $a['fields']['custom.feature.deadline'];
 	} );
 
 	return $deadline_tasks;
